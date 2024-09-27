@@ -1,6 +1,3 @@
-library(tidyverse)
-library(mongolite)
-
 Sys.setenv(TZ='CST6CDT')
 
 connection_url <- paste0("mongodb+srv://jeremydumalig:", 
