@@ -1,4 +1,9 @@
 get_players = function(league, team, y=2024) {
+ 
+  if ((!exists("raw_player_box25")) & (team != "Chicago")) {
+    return( data.frame(Player=c(), `#`=c()) )
+  }
+  
   if ((league == "MBB") & (team == "Chicago") & (y == 2025)) {
     return(data.frame(Player=m_roster25,
                       MIN = seq(1:length(m_roster25))))
@@ -142,8 +147,8 @@ box_score = function(league, team, players, date="All Practices", y=2024) {
     gt() %>%
     gt_shading %>%
     cols_width(Player ~ "154px",
-                   contains("AST/TO") ~ "85px",
-                   everything() ~ "80px") %>%
+               contains("AST/TO") ~ "85px",
+               everything() ~ "80px") %>%
     tab_style(style=list(cell_text(weight="bold")),
               locations = cells_body(rows = (Player == "Total"))) %>%
     opt_interactive(use_highlight=TRUE,
@@ -187,7 +192,9 @@ box_log = function(league, team, players, date="All Practices", y=2024) {
            `3P-R` = 100 * `3PA` / FGA,
            `FG` = paste(as.character(FGM), as.character(FGA), sep="-"),
            `FG%` = 100 * FGM / FGA,
-           across(where(is.numeric), ~ round(., 1))) %>%
+           `Foul %` = Fouls / (Fouls + FGA),
+           across(where(is.numeric), ~ round(., 1)),
+           PPS = round(PTS / (FGA + Fouls), 2)) %>%
     merge(
       (get_events(league, team, y=y) %>%
          filter(Date %in% dates,
@@ -204,7 +211,17 @@ box_log = function(league, team, players, date="All Practices", y=2024) {
       on="Date",
       all.x=TRUE
     ) %>%
-    gt()
+    select(c("Date", "2P", "2P%", "3P", "3P%", "3P-R", 
+             "FG", "FG%", "PTS", "PPS", 
+             "Fouls", "FTM", "Foul %", "Paint PTS", "Drive PTS", "Drive %",
+             "OREB", "DREB", "REB", "AST", "TO", "AST/TO")) %>%
+    gt() %>%
+    gt_shading %>%
+    cols_width(Date ~ "120px",
+               contains("AST/TO") ~ "85px",
+               everything() ~ "80px") %>%
+    opt_interactive(use_highlight=TRUE,
+                    page_size_default=7)
 }
 
 turnover_table = function(league, team, players, dates) {
@@ -227,9 +244,32 @@ turnover_table = function(league, team, players, dates) {
                     page_size_default=20)
 }
 
+player_turnover_table = function(league, team, players, dates) {
+  get_turnovers(league, team) %>%
+    filter(Player %in% players,
+           Date %in% dates) %>%
+    mutate(`Type` = TO) %>%
+    select(-TO) %>%
+    group_by(Player, `Type`) %>%
+    summarize(Total = n(),
+              .groups='drop') %>%
+    ungroup() %>%
+    mutate(Frequency = round(100 * Total / sum(Total), 1)) %>%
+    arrange(desc(Frequency)) %>%
+    gt() %>%
+    cols_width(Player ~ "154px",
+               Type ~ "150px",
+               Frequency ~ "120px",
+               contains("AST/TO") ~ "85px",
+               everything() ~ "75px") %>%
+    opt_interactive(use_highlight=TRUE,
+                    use_search=TRUE,
+                    page_size_default=20)
+}
+
 shooting_table = function(league, team, date, type, 
                           min_shots, player=c(), y=2024) {
-  if ((length(player) == 0) | ("All Players" %in% player)) {
+  if ("All Players" %in% player) {
     players = get_players(league, team, y=y)$Player
   } else {
     players = player
@@ -291,34 +331,11 @@ shooting_table = function(league, team, date, type,
                     page_size_values=c(10, 20, 30))
 }
 
-player_turnover_table = function(league, team, players, dates) {
-  get_turnovers(league, team) %>%
-    filter(Player %in% players,
-           Date %in% dates) %>%
-    mutate(`Type` = TO) %>%
-    select(-TO) %>%
-    group_by(Player, `Type`) %>%
-    summarize(Total = n(),
-              .groups='drop') %>%
-    ungroup() %>%
-    mutate(Frequency = round(100 * Total / sum(Total), 1)) %>%
-    arrange(desc(Frequency)) %>%
-    gt() %>%
-    cols_width(Player ~ "154px",
-               Type ~ "150px",
-               Frequency ~ "120px",
-               contains("AST/TO") ~ "85px",
-               everything() ~ "75px") %>%
-    opt_interactive(use_highlight=TRUE,
-                    use_search=TRUE,
-                    page_size_default=20)
-}
-
 player_shot_type_table = function(league, team, date, type, 
                                   min_shots, player=c(), y=2024) {
   dates = retrieve_dates(league, team, date, y=y)
   
-  if ((length(player) == 0) | ("All Players" %in% players)) {
+  if ("All Players" %in% player) {
     players = get_players(league, team, y=y)$Player
   } else {
     players = player
@@ -432,6 +449,11 @@ hex_map = function(league, team, date, players, shot_types, y=2024) {
 }
 
 heat_map = function(league, team, date, players, shot_types, miss=F, y=2024) {
+  
+  if (length(players) == 0) {
+    return(half_court)
+  }
+  
   dates = retrieve_dates(league, team, date, y=y)
   
   raw_df =
