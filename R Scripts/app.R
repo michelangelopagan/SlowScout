@@ -1,14 +1,18 @@
 library(gt)
 library(DT)
 library(zoo)
+library(pak)
 library(shiny)
 library(plotly)
+library(reactR)
 library(cowplot)
 library(ggplot2)
 library(janitor)
 library(gtExtras)
+library(reactable)
 library(tidyverse)
 library(paletteer)
+library(mongolite)
 library(comprehenr)
 library(shinytitle)
 library(shinyWidgets)
@@ -20,7 +24,7 @@ library(shinydashboard)
 source("Data_Master.R")
 source("Database.R")
 source("Data24.R")
-# source("Data25.R")
+source("Data25.R")
 source("Color.R")
 source("Rankings.R")
 source("Rotations.R")
@@ -40,7 +44,7 @@ ui = dashboardPage(
       radioGroupButtons(inputId="season",
                         label="Select season:",
                         choices=c(2024, 2025),
-                        selected=2024,
+                        selected=2025,
                         status='default',
                         justified=TRUE),
       radioGroupButtons(
@@ -438,6 +442,20 @@ ui = dashboardPage(
                             tabPanel("TO%", plotlyOutput("trends_to"))))
       ),
       tabItem(tabName="glossary",
+              h1("SlowScout Manual"),
+              h4(
+                HTML(
+                  paste0(
+                    "For a more in depth breakdown on the back-end and front-e", 
+                    "nd development of SlowScout, you can reference the <a hre", 
+                    "f='https://drive.google.com/file/d/1SL34nTnWYzgQimhKOLY1b", 
+                    "DN2Aib4oeu8/view?usp=sharing'>manual</a> or the <a href='", 
+                    "https://github.com/jeremydumalig/SlowScout'>GitHub reposi", 
+                    "tory</a>."
+                  )
+                )
+              ),
+              br(),
               h1("Advanced Stats Glossary"),
               br(),
               h4("Possessions (POSS)"),
@@ -887,9 +905,11 @@ server = function(input, output, session) {
   ########## player_dash ##########
   
   output$select_player = renderUI({
+    players = rotation_order24[(rotation_order24 %in% choices_df()$Player)]
+    
     selectInput(inputId="player",
                 label="Select player:",
-                choices=sort(choices_df()$Player)
+                choices=players
     )
   })
   
@@ -962,16 +982,23 @@ server = function(input, output, session) {
       condition = 'input.track_team_type == "OPP"',
       pickerInput(inputId="track_team",
                   label="",
-                  choices=c(uaa_teams, "Non-UAA Scout")
+                  choices=c("Non-UAA Scout", uaa_teams)
       )
     )
   })
   
   output$tracker_pick_player = renderUI({
-    if (input$track_team %in% uaa_teams) {
-      opponent_players =
-        (get_players(input$league, input$track_team, y=input$season) %>%
-           mutate(Name = paste(`#`, Player, sep=" - ")))$Name
+    
+    if (input$track_team == "Chicago") {
+      
+    } else if (input$track_team %in% uaa_teams) {
+      if (exists("raw_player_box25")) {
+        opponent_players =
+          (get_players(input$league, input$track_team, y=input$season) %>%
+             mutate(Name = paste(`#`, Player, sep=" - ")))$Name
+      } else {
+        opponent_players = c()
+      }
     } else if (input$league == "WBB") {
       opponent_players = w_non_conf_opponents25
     } else {
@@ -983,7 +1010,7 @@ server = function(input, output, session) {
         inputId = "track_player",
         label = "Player",
         choices = (if (input$track_team_type == "TEAM")
-          c(sort(choices_df()$Player), "Other")
+          c(sort(get_players(input$league, "Chicago", y=input$season)$Player), "Other")
           else opponent_players),
         status = "default"
       ),
