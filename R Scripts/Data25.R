@@ -330,8 +330,8 @@ opponent_averages25 =
 
 refresh_dates25 = function() {
   w_all_dates25 <<- 
-    unique(c(get_shots("WBB", "Chicago")$Date, 
-             get_events("WBB", "Chicago")$Date)) %>%
+    unique(c(get_shots("WBB", "Chicago", y=2025)$Date, 
+             get_events("WBB", "Chicago", y=2025)$Date)) %>%
     date_filter_helper(y=2025)
   w_game_dates25 <<- unique(filter(team_box25, 
                                    League == "WBB",
@@ -339,8 +339,8 @@ refresh_dates25 = function() {
   w_practices25 <<- w_all_dates25[!(w_all_dates25 %in% w_game_dates25)]
   
   w_all_dates25 <<- 
-    unique(c(get_shots("MBB", "Chicago")$Date, 
-             get_events("MBB", "Chicago")$Date)) %>%
+    unique(c(get_shots("MBB", "Chicago", y=2025)$Date, 
+             get_events("MBB", "Chicago", y=2025)$Date)) %>%
     date_filter_helper(y=2025)
   m_game_dates25 <<- unique(filter(team_box25, 
                                    League == "MBB",
