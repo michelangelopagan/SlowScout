@@ -17,17 +17,17 @@ player_cols = c("PTS", "FGM-A", "FG%",
                 "OREB", "DREB", "REB", "AST", "TO", "AST/TO", 
                 "STL", "BLK", "PF")
 
-w_non_conf_opponents25 = read_csv("w_non_conf_opponents.csv")$Team
-m_non_conf_opponents25 = read_csv("m_non_conf_opponents.csv")$Team
+w_non_conf_opponents25 = read_csv("./Team Data/w_non_conf_opponents.csv")$Team
+m_non_conf_opponents25 = read_csv("./Team Data/m_non_conf_opponents.csv")$Team
 
-w_roster25 = read_csv("w_chicago_roster.csv")$Player
-m_roster25 = read_csv("m_chicago_roster.csv")$Player
+w_roster25 = read_csv("./Team Data/w_chicago_roster.csv")$Player
+m_roster25 = read_csv("./Team Data/m_chicago_roster.csv")$Player
 
-region_labels <- read_csv(file="region_labels.csv")
+region_labels <- read_csv("./Team Data/region_labels.csv")
 
-shading_df <- read_csv("shading.csv")
+shading_df <- read_csv("./Team Data/shading.csv")
 
-uaa_teams_csv <- read_csv("uaa_teams.csv")
+uaa_teams_csv <- read_csv("./Team Data/uaa_teams.csv")
 uaa_teams = uaa_teams_csv$Team
 
 extract_player <- function(action) {
@@ -52,3 +52,4 @@ date_filter_helper = function(dates, y=2024) {
     return( dates[(dates >= threshold)] )
   }
 }
+
