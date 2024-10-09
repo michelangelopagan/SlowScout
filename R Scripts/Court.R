@@ -1,14 +1,24 @@
 library(plotly)
 library(ggplot2)
 
-shot_types <- c("Down Screen", "Flare Screen", "Back Screen", "Off-Ball Screen", "Stagger Screen", "Wide Screen", "Pin Screen", "Ricky Screen", 
+# shot_types <- c("Down Screen", "Flare Screen", "Back Screen", "Off-Ball Screen", 
+#                 "Stagger Screen", "Wide Screen", "Pin Screen", "Ricky Screen", 
+#                 "Closeout Drive", "Isolation Drive", "PnR Drive", "DHO",
+#                 "PnR Roll", "PnR Pop", "Drive + Dump", "Cross Screen", 
+#                 "Off-Ball Cut", "OREB Putback", "Post-Up", "Transition",
+#                 "Stepback", "Face-Up", "Pull-Up", "Spot-Up", "Iverson Screen", 
+#                 "Other")
+
+shot_types <- c("Down Screen", "Back Screen", "Off-Ball Screen", "On-Ball Screen",
                 "Closeout Drive", "Isolation Drive", "PnR Drive", "DHO",
-                "PnR Roll", "PnR Pop", "Drive + Dump", "Cross Screen", "Off-Ball Cut", "OREB Putback", "Post-Up", "Transition",
-                "Stepback", "Face-Up", "Pull-Up", "Spot-Up", "Iverson Screen", "Other")
+                "PnR Roll", "PnR Pop", "Drive + Dump", "Cross Screen", "Off-Ball Cut", "OREB Putback", 		"Post-Up", "Transition",
+                "Stepback", "Face-Up", "Pull-Up", "Spot-Up")
 
-turnover_types <- c("Perimeter/Strip", "Bad Pass", "Drive", "Drive + Pass", "Post Entry", "Other")
+turnover_types <- c("Perimeter/Strip", "Bad Pass", "Drive", 
+                    "Drive + Pass", "Post Entry", "Other")
 
-regions3 <- c("Left Corner", "Left Wing", "Above the Arc", "Right Wing", "Right Corner")
+regions3 <- c("Left Corner", "Left Wing", "Above the Arc", 
+              "Right Wing", "Right Corner")
 
 half_court <-
   ggplot(data=data.frame(x=1,y=1), aes(x,y)) +
