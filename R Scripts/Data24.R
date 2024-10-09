@@ -1,6 +1,6 @@
-raw_player_box24 = read_csv("./Team Data/player_box24.csv")
-raw_team_box24 = read_csv("./Team Data/team_box24.csv")
-raw_plays24 = read_csv("./Team Data/plays24.csv")
+raw_player_box24 = read_csv("./player_box24.csv")
+raw_team_box24 = read_csv("./team_box24.csv")
+raw_plays24 = read_csv("./plays24.csv")
 
 player_box24 = 
   raw_player_box24 %>%
