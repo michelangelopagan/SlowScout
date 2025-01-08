@@ -1,13 +1,11 @@
 library(plotly)
 library(ggplot2)
 
-shot_types <- c("Down Screen", "Flare Screen", "Back Screen", "Off-Ball Screen",
-                "Stagger Screen", "Wide Screen", "Pin Screen", "Ricky Screen",
-                "Closeout Drive", "Isolation Drive", "PnR Drive", "DHO",
-                "PnR Roll", "PnR Pop", "Drive + Dump", "Cross Screen",
-                "Off-Ball Cut", "OREB Putback", "Post-Up", "Transition",
-                "Stepback", "Face-Up", "Pull-Up", "Spot-Up", "Iverson Screen",
-                "On-Ball Screen",
+shot_types <- c("Off-Ball Screen","On-Ball Screen", "Off-Ball Cut",
+                "Closeout Drive", "Isolation Drive", "Transition",
+                "PnR Drive", "PnR Roll", "PnR Pop",
+                "Drive + Dump", "OREB Putback", "Post-Up",
+                "Stepback", "Face-Up", "Pull-Up", "Spot-Up","DHO",
                 "Other")
 
 turnover_types <- c("Perimeter/Strip", "Bad Pass", "Drive", 
